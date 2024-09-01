@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 const generateToken = (userId, res) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
+    expiresIn: "15d",
   });
 
   res.cookie("token", token, {
@@ -90,3 +90,12 @@ export const logOut = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const getMe = async (req, res) => {
+  try{
+    const user = await User.findById(req.user._id).select("-password")
+    res.status(200).json(user)
+  }catch(err){
+    console.log(err)
+  }
+}
