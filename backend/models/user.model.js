@@ -23,6 +23,10 @@ const userSchema = mongoose.Schema({
         type: String,
         default: ""
     },
+    profileImg: {
+        type: String,
+        default: ""
+    },
     followers: [
         {
             type: mongoose.Schema.Types.ObjectId,

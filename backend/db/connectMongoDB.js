@@ -1,4 +1,3 @@
-import {MongoClient} from "mongodb"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 
@@ -7,14 +6,13 @@ const URI = process.env.MONGO_URI
 
 let dbConection 
 
-export const connectToMongoDB = async (callback) => {
+export const connectToMongoDB = async () => {
     try{
-        const conn = mongoose.connect(URI)
+        await mongoose.connect(URI)
         console.log("Successfully connected to MongoDB")
-        return callback()
     } catch(err){
         console.error(err)
-        process.exit()
+        process.exit(1)
     }
 }
 

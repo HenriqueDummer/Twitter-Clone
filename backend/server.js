@@ -1,26 +1,25 @@
-import express from "express"
-import authRoutes from "./Routes/auth.routes.js"
-import dotenv from "dotenv"
-import cookieParser from "cookie-parser"
+import express from "express";
+import authRoutes from "./Routes/auth.routes.js";
+import usersRoutes from "./Routes/users.routes.js"
+import postsRoutes from "./Routes/posts.routes.js"
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
-import {connectToMongoDB} from "./db/connectMongoDB.js"
+import { connectToMongoDB } from "./db/connectMongoDB.js";
 
-dotenv.config()
-const PORT = process.env.PORT
+dotenv.config();
+const PORT = process.env.PORT;
 
-const app = express()
+const app = express();
 
-app.use(express.json())
-app.use(cookieParser())
+app.use(express.json());
+app.use(cookieParser());
 
-connectToMongoDB(() => {
-    app.listen(PORT, () => {
-        console.log("Listening on port " + PORT)
-    })
-})
+app.use("/api/auth", authRoutes);
+app.use("/api/users", usersRoutes);
+app.use("/api/posts", postsRoutes);
 
-app.use("/api/auth", authRoutes)
-
-
-
-
+app.listen(PORT, () => {
+    console.log("Listening on port " + PORT);
+    connectToMongoDB();
+  });
