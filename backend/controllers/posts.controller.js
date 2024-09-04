@@ -36,7 +36,6 @@ export const createPost = async (req, res) => {
 export const likePost = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { id: postId } = req.params;
 
     let post = await Post.findById(req.params.id);
 
@@ -47,8 +46,7 @@ export const likePost = async (req, res) => {
     const userLikedThePost = post.likes.includes(userId);
 
     if (userLikedThePost) {
-      await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
-      return res.status(200).json({ message: "Disliked the post" });
+      post.likes = post.likes.filter((id) => id.toString() !== userId.toString());
     } else {
       post.likes.push(userId);
 
@@ -58,11 +56,10 @@ export const likePost = async (req, res) => {
         type: "like",
       });
 
-      await post.save();
       await notification.save();
-
-      return res.status(200).json({ message: "Liked the post" });
     }
+    await post.save();
+    return res.status(200).json(post.likes);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -113,21 +110,24 @@ export const deletePost = async (req, res) => {
 
 export const getAllPosts = async (req, res) => {
   try {
-    const posts = await Post.find().sort({ createdAt: -1 }).populate({
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .populate({
         path: "user",
-        select: "-password"
-    }).populate({
+        select: "-password",
+      })
+      .populate({
         path: "comments.user",
-        select: "-password"
-    });
+        select: "-password",
+      });
 
-    if(posts.length == 0){
-        return res.status(200).json([])
+    if (posts.length == 0) {
+      return res.status(200).json([]);
     }
 
-    res.status(200).json(posts)
+    res.status(200).json(posts);
   } catch (err) {
-    console.log(err)
+    console.log(err);
     res.status(500).json({ message: "Internal server error" });
   }
 };

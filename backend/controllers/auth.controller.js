@@ -9,6 +9,8 @@ const generateToken = (userId, res) => {
   res.cookie("token", token, {
     maxAge: 15 * 24 * 60 * 60 * 1000,
     httpOnly: true,
+    secure: true,
+    sameSite: "None"
   });
 };
 
@@ -66,7 +68,7 @@ export const logIn = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    console.log(user);
+
     if (!user) {
       return res.status(400).json({ message: "Email not found" });
     }
@@ -76,7 +78,7 @@ export const logIn = async (req, res) => {
     }
 
     generateToken(user._id, res);
-    res.status(200).json({ message: "Logged as " + user.fullName });
+    res.status(200).json(user);
   } catch (err) {
     res.status(500).json({ message: "Internal server error" });
   }
