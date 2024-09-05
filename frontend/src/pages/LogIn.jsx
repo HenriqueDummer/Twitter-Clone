@@ -12,12 +12,10 @@ const LogIn = () => {
     mutationFn: submitLogIn,
     onSuccess: ({ userName }) => {
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
-      navigate("/home" );
     },
   });
 
   function handleSubmit() {
-    console.log("click");
     mutate({
       email: emailRef.current.value,
       password: passwordRef.current.value,

@@ -1,12 +1,14 @@
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import Notification from "../models/notification.model.js";
+import { v2 as cloudinary } from "cloudinary";
 
 export const createPost = async (req, res) => {
   let post = req.body;
 
   try {
-    const { text, img } = req.body;
+    const { text } = req.body;
+    let { img } = req.body;
     const userId = req.user._id.toString();
 
     const user = await User.findById(userId);
@@ -16,6 +18,11 @@ export const createPost = async (req, res) => {
       return res
         .status(400)
         .json({ message: "Must provide a image or a text" });
+    }
+
+    if (img) {
+      const uploadedResponse = await cloudinary.uploader.upload(img);
+      img = uploadedResponse.secure_url;
     }
 
     const newPost = new Post({
@@ -46,7 +53,9 @@ export const likePost = async (req, res) => {
     const userLikedThePost = post.likes.includes(userId);
 
     if (userLikedThePost) {
-      post.likes = post.likes.filter((id) => id.toString() !== userId.toString());
+      post.likes = post.likes.filter(
+        (id) => id.toString() !== userId.toString()
+      );
     } else {
       post.likes.push(userId);
 
@@ -130,4 +139,29 @@ export const getAllPosts = async (req, res) => {
     console.log(err);
     res.status(500).json({ message: "Internal server error" });
   }
+};
+
+export const getUserPosts = async (req, res) => {
+	try {
+		const { userName } = req.params;
+    console.log(req.params)
+		const user = await User.findOne({ userName });
+		if (!user) return res.status(404).json({ error: "User not found" });
+
+		const posts = await Post.find({ user: user._id })
+			.sort({ createdAt: -1 })
+			.populate({
+				path: "user",
+				select: "-password",
+			})
+			.populate({
+				path: "comments.user",
+				select: "-password",
+			});
+
+		res.status(200).json(posts);
+	} catch (error) {
+		console.log("Error in getUserPosts controller: ", error);
+		res.status(500).json({ error: "Internal server error" });
+	}
 };

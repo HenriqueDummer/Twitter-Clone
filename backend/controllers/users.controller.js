@@ -3,10 +3,10 @@ import Notification from "../models/notification.model.js";
 import { response } from "express";
 
 export const getUserProfile = async (req, res) => {
-  const { username } = req.params;
-
+  const { userName } = req.params;
+  console.log(req.params)
   try {
-    const user = await User.findOne({ userName: username }).select("-password");
+    const user = await User.findOne({ userName: userName }).select("-password");
     if (!user) {
       return res.status(400).json({ message: "User not found" });
     }

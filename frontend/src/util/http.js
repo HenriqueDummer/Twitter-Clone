@@ -67,7 +67,7 @@ export const submitLogOut = async () => {
 
 }
 
-export const getProfile = async ({signal, userName}) => {
+export const getProfile = async (userName) => {
     try{
         const response = await fetch("http://localhost:8080/api/users/profile/" + userName, {
             method: "GET",
@@ -78,7 +78,6 @@ export const getProfile = async ({signal, userName}) => {
          })
 
          const data = await response.json()
-
          if(!response.ok) throw new Error(data.error || "Failed to get profile")
 
          return data
@@ -88,7 +87,7 @@ export const getProfile = async ({signal, userName}) => {
     }
 }
 
-export const getMe = async ({signal, userName}) => {
+export const getMe = async () => {
     try{
         const response = await fetch("http://localhost:8080/api/auth/me", {
             method: "GET",
@@ -100,6 +99,7 @@ export const getMe = async ({signal, userName}) => {
 
          const data = await response.json()
 
+         if(data.error) return false
          if(!response.ok) throw new Error(data.error || "Failed to get profile")
 
          return data
@@ -109,7 +109,7 @@ export const getMe = async ({signal, userName}) => {
     }
 }
 
-export const getPosts = async () => {
+export const getAllPosts = async () => {
     try{
         const response = await fetch("http://localhost:8080/api/posts/all", {
             method: "GET",
@@ -151,7 +151,7 @@ export const submitLike = async (postId) => {
     }
 }
 
-export const submitCretePost = async ({text, img}) => {
+export const submitCreatePost = async ({text, img}) => {
     try{
         const response = await fetch("http://localhost:8080/api/posts/create", {
            method: "POST",
@@ -167,9 +167,30 @@ export const submitCretePost = async ({text, img}) => {
 
         const data = await response.json()
         
-        if(!response.ok) throw new Error(data.error || "Failed to login")
+        if(!response.ok) throw new Error(data.message || "Failed to create post")
 
-        console.log(data)
+        return data
+    }catch(error){
+        console.error(error)
+        throw error
+    }
+}
+
+export const getUserPosts = async ({userName}) => {
+    try{
+        const response = await fetch("http://localhost:8080/api/posts/user/" + userName, {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+             "Content-Type": "application/json"
+            }
+         })
+
+         const data = await response.json()
+         if(!response.ok) throw new Error(data.error || "Failed to get profile")
+            console.log(userName)
+            console.log(data)
+         return data
     }catch(error){
         console.error(error)
         throw error

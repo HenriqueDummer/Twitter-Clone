@@ -1,19 +1,23 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
-import { queryClient, submitCretePost, submitLike } from "../util/http";
+import { queryClient, submitCreatePost } from "../util/http";
 
 const Post = ({ authUser }) => {
   const imgRef = useRef();
   const textRef = useRef()
 
-  const { mutate } = useMutation({
-    mutationFn: submitCretePost,
-    onSuccess: () => {
+  const [img, setImg] = useState();
 
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: submitCreatePost,
+    onSuccess: () => {
+      setImg("")
+      textRef.current.value = ""
+      queryClient.invalidateQueries(["posts"])
     }
   });
 
-  const [img, setImg] = useState();
 
   const handleImgChange = (e) => {
     const file = e.target.files[0];
@@ -36,14 +40,20 @@ const Post = ({ authUser }) => {
         <img className="w-16 h-16 rounded-full" src={authUser.profileImg} alt="" />
         <div className="px-2 text-zinc-300 w-full">
             <form className="w-full">
-              <input
-                className="bg-transparent border border-slate-800 rounded-lg p-2 mt-2 w-full"
-                type="text"
-                name="text"
-                id="text"
-                placeholder={img}
-                ref={textRef}
-              />
+            <textarea
+              className='textarea w-full mt-2 text-lg resize-none h-auto border-none focus:outline-none bg-slate-900 border-gray-800'
+              placeholder='What is happening?!'
+              ref={textRef}
+            />
+
+              {img && 
+              <div className="relative">
+                <button onClick={() => setImg(null)} className="bg-slate-900 w-10 aspect-square rounded-full absolute right-2 top-2 opacity-70">
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+                <img className="w-full rounded-lg mt-2" src={img} alt="" />
+              </div>
+              }
 
               <div className="flex w-full">
                 <div className="flex justify-between items-center w-full h-16">
@@ -64,9 +74,12 @@ const Post = ({ authUser }) => {
                   <button
                     type="button"
                     onClick={handleCreatePost}
-                    className="px-3 py-1 bg-blue-600 rounded-full text-lg font-semibold"
+                    className={`px-3 py-1 ${isPending ?  "bg-blue-400" : "bg-blue-600"} rounded-full text-lg font-semibold`}
+                    disabled={isPending}
                   >
-                    <span>Tweet</span>
+                    <span>
+                      {isPending ? "Posting..." : "Tweet"}
+                    </span>
                   </button>
                 </div>
               </div>

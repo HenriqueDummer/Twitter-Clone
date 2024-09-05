@@ -21,7 +21,7 @@ const userSchema = mongoose.Schema({
     },
     coverImg: {
         type: String,
-        default: ""
+        default: "https://twirpz.wordpress.com/wp-content/uploads/2015/06/twitter-avi-gender-balanced-figure.png"
     },
     profileImg: {
         type: String,

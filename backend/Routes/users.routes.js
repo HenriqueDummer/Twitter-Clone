@@ -9,7 +9,7 @@ import { protectRoute } from "../middleware/protectRouter.js";
 
 const routes = express.Router();
 
-routes.get("/profile/:username", protectRoute, getUserProfile);
+routes.get("/profile/:userName", protectRoute, getUserProfile);
 routes.post("/follow/:id", protectRoute, followUnfollowUser);
 routes.post("/update/:id", protectRoute, updateUserProfile);
 

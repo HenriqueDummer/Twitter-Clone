@@ -2,7 +2,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
 import { queryClient, submitLike } from "../util/http";
 
-const Post = ({ postData, authUser }) => {
+const Post = ({ postData }) => {
+  const {data: authUser} = useQuery({queryKey: ["authUser"]})
   const { mutate } = useMutation({
     mutationFn: submitLike,
     onSuccess: (updatedLikes) => {

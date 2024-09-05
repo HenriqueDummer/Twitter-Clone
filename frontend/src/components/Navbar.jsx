@@ -4,20 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { queryClient, submitLogOut } from "../util/http";
 
 const Navbar = () => {
-    const navigate = useNavigate()
-  const {mutate , isLoading, isError, error} = useMutation({
+  const navigate = useNavigate()
+  const {mutate: logout , isLoading, isError, error} = useMutation({
     mutationFn: submitLogOut,
     onSuccess: () => {
-        queryClient.invalidateQueries(["authUser"])
-        navigate('/')
+        queryClient.invalidateQueries({ queryKey: ["authUser"] });
     }
   })
   const { data: authUser } = useQuery({ queryKey: ["authUser"] });
- 
-
-  function handleLogout() {
-    mutate()
-  }
 
   const listStyle = "w-full "
   const linkStyle = "w-full bg-zinc-700 py-1 px-2 rounded-lg  text-slate-300 text-xl"
@@ -40,10 +34,10 @@ const Navbar = () => {
           <Link className={linkStyle}  to="/notificaions/">Notifications</Link>
         </li>
         <li className={listStyle}>
-          <Link className={linkStyle}  to={`/profile/:${authUser?._id}`}>Profile</Link>
+          <Link className={linkStyle}  to={`/profile/${authUser?.userName}`}>Profile</Link>
         </li>
       </ul>
-      <button className="w-full mb-8 bg-zinc-700 py-2 px-2 rounded-lg  text-slate-300 text-xl" onClick={handleLogout}>
+      <button className="w-full mb-8 bg-zinc-700 py-2 px-2 rounded-lg  text-slate-300 text-xl" onClick={logout}>
         Logout
       </button>
     </nav>
